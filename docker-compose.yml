@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: job_tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/job_tracker
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GMAIL_CREDENTIALS: ${GMAIL_CREDENTIALS}
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+
+volumes:
+  postgres_data:
